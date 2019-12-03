@@ -1,0 +1,61 @@
+/****************************************************************************************
+ * LvglTask.cpp - A dedicated task for running LittlevGL
+ * Created by Ed Nelson on Nov. 06, 2019
+ *
+ * Derivative Works
+ * Smooth - A C++ framework for embedded programming on top of Espressif's ESP-IDF
+ * Copyright 2019 Per Malmberg (https://gitbub.com/PerMalmberg)
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * LittlevGL - A powerful and easy-to-use embedded GUI
+ * Copyright (c) 2016 Gábor Kiss-Vámosi (https://github.com/littlevgl/lvgl)
+ * Licensed under MIT License
+ ***************************************************************************************/
+#include "gui/LvglTask.h"
+#include <lv_conf.h>
+
+using namespace std::chrono;
+using namespace smooth::core;
+
+namespace redstone
+{
+    // Class constants
+    static const char* TAG = "LvglTask";
+
+    // Constructor
+    LvglTask::LvglTask()
+            : Task("LvglTask", 4096, 10, milliseconds(100)),
+
+              // The Task Name = "LvglTask"
+              // The stack size is 4096 bytes
+              // The priority is set to 10
+              // The tick interval is 100ms
+
+              view_controller(*this)
+    {
+    }
+
+    // Intialize the Task
+    void LvglTask::init()
+    {
+        Log::info(TAG, "initializing LvglTask");
+
+        initialized = lvgl_display_driver.initialize();
+
+        if (initialized)
+        {
+            view_controller.init();
+        }
+        else
+        {
+            Log::error(TAG, "Initialization of LvglTask failed");
+        }
+    }
+
+    // The task tick event that happens every 500ms
+    void LvglTask::tick()
+    {
+        // Let LittlevGL do some work
+        lv_task_handler();
+    }
+}
