@@ -14,8 +14,8 @@ include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 # Add the smooth component 
 set(EXTRA_COMPONENT_DIRS 
-        externals/smooth//Smooth/smooth_component
-        externals/gui-lvgl/lvgl)
+        externals/smooth/Smooth/smooth_component
+        externals/gui-lvgl)
 
 # The project name is used for the final binary output files 
 # of the app - ie myProject.elf, myProject.bin
