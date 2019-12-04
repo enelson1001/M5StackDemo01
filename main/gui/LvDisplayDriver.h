@@ -15,7 +15,12 @@
 
 #include <smooth/application/display/ILI9341.h>
 #include <smooth/core/util/DmaFixedBuffer.h>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnarrowing"
 #include <lvgl/lvgl.h>
+#pragma GCC diagnostic pop
+
 #include "esp_attr.h"
 
 namespace redstone
@@ -45,7 +50,7 @@ namespace redstone
             // setting up and finishing transfers. Make sure LV_HOR_MAX is dividable by this.
             //
             // Note 3 - MAX_DMA_LEN is used to set the maximum transfer size in BYTES for a
-            // spi transaction, it is also used to create buffer(s) required by LittlevGL 
+            // spi transaction, it is also used to create buffer(s) required by LittlevGL
             // to draw screen content. LV_HOR_RES_MAX is defined in LittlevGL lv_config.h file
             static constexpr int COLOR_SIZE = LV_COLOR_DEPTH / 8;                               // See Note 1
             static constexpr int LINES_TO_SEND = 40;                                            // See Note 2

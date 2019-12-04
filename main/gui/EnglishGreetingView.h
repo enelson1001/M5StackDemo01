@@ -14,19 +14,22 @@
 #pragma once
 
 #include "gui/IView.h"
-#include <lvgl/lvgl.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnarrowing"
+#include <lvgl/lvgl.h>
+#pragma GCC diagnostic pop
 
 namespace redstone
 {
-    class EnglishGreetingView : public IView       
+    class EnglishGreetingView : public IView
     {
-        public: 
+        public:
             EnglishGreetingView();
-            
-            void build_view() override;
-            void show() override;
 
+            void build_view() override;
+
+            void show() override;
 
         private:
             lv_obj_t* english_greeting_screen;
