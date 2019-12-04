@@ -1,8 +1,5 @@
-set(LGVL_COMPONENT_DIRS  ${LVGL_COMPONENT_DIRS}
-                $ENV{HOME}/esp32-externals/lvgl-gui/components
-                $ENV{HOME}/esp32-externals/lvgl-gui/components/lvgl)
+file(GLOB_RECURSE SOURCES lvgl/src/*.c)
+idf_component_register(SRCS ${SOURCES}
+                       INCLUDE_DIRS . lvgl)
 
-set(EXTRA_COMPONENT_DIRS "${EXTRA_COMPONENT_DIRS} ${LVGL_COMPONENT_DIRS}")
-
-#message(STATUS "??????? EXTRA COMPONENT DIRECTORIES = ${EXTRA_COMPONENT_DIRS}")
-
+target_compile_definitions(${COMPONENT_LIB} INTERFACE LV_CONF_INCLUDE_SIMPLE=1)
