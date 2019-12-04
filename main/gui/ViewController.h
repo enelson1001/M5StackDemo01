@@ -1,6 +1,8 @@
 /****************************************************************************************
  * ViewController.h - Controls which view is presented
- * Created by Ed Nelson on Nov. 06, 2019
+ * Created on Dec. 03, 2019
+ * Copyright (c) 2019 Ed Nelson (https://github.com/enelson1001)
+ * Licensed under MIT License (see LICENSE file)
  *
  * Derivative Works
  * Smooth - A C++ framework for embedded programming on top of Espressif's ESP-IDF
@@ -28,28 +30,26 @@ namespace redstone
 {
     class ViewController : public smooth::core::ipc::IEventListener<ShowViewValue>
     {
-        public: 
-            ViewController(smooth::core::Task &lvglTask);
-            
+        public:
+            ViewController(smooth::core::Task& lvglTask);
+
             void init();
-            
+
             void show_view(std::string view_to_show);
 
             void event(const ShowViewValue& event) override;
 
-
         private:
             void create_view_objects();
+
             void build_views();
 
             std::unordered_map<std::string, std::unique_ptr<IView>> views;
-            bool show_english_greeting {true};
+            bool show_english_greeting{ true };
             std::string view_to_show;
 
-            // Subscriber's queue's 
+            // Subscriber's queue's
             using SubQShowViewValue = smooth::core::ipc::SubscribingTaskEventQueue<ShowViewValue>;
             std::shared_ptr<SubQShowViewValue> subr_queue_show_view_value;
-
-            
     };
 }

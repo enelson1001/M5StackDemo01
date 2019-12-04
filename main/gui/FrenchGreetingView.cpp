@@ -1,6 +1,8 @@
 /****************************************************************************************
  * FrenchGreetingView.cpp - A view that displays an French Greeting
- * Created by Ed Nelson on Nov. 06, 2019
+ * Created on Dec. 03, 2019
+ * Copyright (c) 2019 Ed Nelson (https://github.com/enelson1001)
+ * Licensed under MIT License (see LICENSE file)
  *
  * Derivative Works
  * Smooth - A C++ framework for embedded programming on top of Espressif's ESP-IDF

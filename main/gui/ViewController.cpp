@@ -1,6 +1,8 @@
 /****************************************************************************************
  * ViewController.cpp - Controls which view is presented
- * Created by Ed Nelson on Nov. 06, 2019
+ * Created on Dec. 03, 2019
+ * Copyright (c) 2019 Ed Nelson (https://github.com/enelson1001)
+ * Licensed under MIT License (see LICENSE file)
  *
  * Derivative Works
  * Smooth - A C++ framework for embedded programming on top of Espressif's ESP-IDF
@@ -39,15 +41,12 @@ namespace redstone
         Log::info(TAG, "====== initializing ViewController ======");
         create_view_objects();
         build_views();
-
-        //show_view("French Greeting");
         show_view("English Greeting");
     }
 
     // Create view instance
     void ViewController::create_view_objects()
     {
-        
         views.insert(std::make_pair("English Greeting", std::make_unique<EnglishGreetingView>()));
         views.insert(std::make_pair("French Greeting", std::make_unique<FrenchGreetingView>()));
     }
