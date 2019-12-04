@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 17)
 # the project, discover all the components, etc.
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
-# Add the smooth component 
+# Add the smooth component and lvgl
 set(EXTRA_COMPONENT_DIRS 
         externals/smooth/Smooth/smooth_component
         externals/gui-lvgl)

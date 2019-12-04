@@ -11,8 +11,7 @@ idf_component_register(SRCS ${SOURCES}
         INCLUDE_DIRS
             ${CMAKE_CURRENT_LIST_DIR}
             $ENV{IDF_PATH}/components
-            $ENV{HOME}/esp32-externals/lvgl-gui/components
         REQUIRES
             smooth_component
-            lvgl
+            gui-lvgl
         )
