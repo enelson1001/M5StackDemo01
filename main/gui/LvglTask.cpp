@@ -52,7 +52,7 @@ namespace redstone
         }
     }
 
-    // The task tick event that happens every 500ms
+    // The task tick event that happens every 100ms
     void LvglTask::tick()
     {
         // Let LittlevGL do some work
