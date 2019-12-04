@@ -51,7 +51,7 @@ namespace redstone
         if (ili9341_initialized)
         {
             // M5Stack requires a different setting for a portrait screen
-            //display->set_rotation(0x68);
+            display->set_rotation(0x68);
 
             // set callback pointer to this object
             ptrLvDisplayDriver = this;
