@@ -52,48 +52,18 @@ namespace redstone
         {
             // M5Stack requires a different setting for a portrait screen
             //display->set_rotation(0x68);
-            
+
             // set callback pointer to this object
             ptrLvDisplayDriver = this;
 
             // initialize LittlevGL graphics library
             lv_init();
-    /*
+
             // create two small buffers,  used by LittlevGL to draw screen content
-            static smooth::core::util::DmaFixedBuffer<uint8_t, MAX_DMA_LEN> display_buf1(MALLOC_CAP_DMA);
-            static_assert(display_buf1.size() % 4 == 0, "display_buf1 must have a length of multiple of 32 bits, i.e. 4 bytes");
-            if (reinterpret_cast<uint32_t>(&display_buf1) % 4 != 0)
-            {
-                Log::warning(TAG, "display_buf1 is not 32 bit alligned, spi transaction efficiency will be reduced");
-            }
-
-            static smooth::core::util::DmaFixedBuffer<uint8_t, MAX_DMA_LEN*100> display_buf2(MALLOC_CAP_DMA);
-            static_assert(display_buf2.size() % 4 == 0, "display_buf2 must have a length of multiple of 32 bits, i.e. 4 bytes");
-            if (reinterpret_cast<uint32_t>(&display_buf2) % 4 != 0)
-            {
-                Log::warning(TAG, "display_buf2 is not 32 bit alligned, spi transaction efficiency will be reduced");
-            }
-            
-            bool res = display_buf1.data() != nullptr
-                  && display_buf2.data() != nullptr;
-            //static lv_color1_t* buf1 = reinterpret_cast<lv_color1_t*>(display_buf1.data());
-
-            //static smooth::core::util::DmaFixedBuffer<uint8_t, MAX_DMA_LEN> display_buf2(MALLOC_CAP_DMA);
-            //static_assert(display_buf2.size() % 4 == 0, "display_buf2 must have a length of multiple of 32 bits, i.e. 4 bytes");
-            //static lv_color1_t* buf2 = reinterpret_cast<lv_color1_t*>(display_buf2.data());
-
-            //Log::error(TAG, "Address of buf1  = {:#04x}", reinterpret_cast<int>(buf1) );
-            //Log::error(TAG, "Address of buf2  = {:#04x}", reinterpret_cast<int>(buf2) );
-
-            
-    */
-
             static SpiDmaFixedBuffer<uint8_t, MAX_DMA_LEN> display_buf1;
             static SpiDmaFixedBuffer<uint8_t, MAX_DMA_LEN> display_buf2;
 
             if (display_buf1.is_buffer_allocated() && display_buf2.is_buffer_allocated())
-
-            //if (res)
             {
                 static lv_color1_t* buf1 = reinterpret_cast<lv_color1_t*>(display_buf1.data());
                 static lv_color1_t* buf2 = reinterpret_cast<lv_color1_t*>(display_buf2.data());
@@ -101,17 +71,18 @@ namespace redstone
                 // initialize a descriptor for the buffer
                 static lv_disp_buf_t disp_buf;
 
-                lv_disp_buf_init(&disp_buf, buf1, buf2, MAX_DMA_LEN/COLOR_SIZE);
+                lv_disp_buf_init(&disp_buf, buf1, buf2, MAX_DMA_LEN / COLOR_SIZE);
+
                 //lv_disp_buf_init(&disp_buf, buf1, NULL, MAX_DMA_LEN/COLOR_SIZE);
-                
+
                 // initialize and register a display driver
                 lv_disp_drv_t disp_drv;
                 lv_disp_drv_init(&disp_drv);
                 disp_drv.buffer = &disp_buf;
-                disp_drv.flush_cb = ili9341_flush_cb;  
+                disp_drv.flush_cb = ili9341_flush_cb;
                 lv_disp_drv_register(&disp_drv);
 
-                // LittlevGL graphics library's tick - runs every 5ms
+                // LittlevGL graphics library's tick - runs every 1ms
                 esp_register_freertos_tick_hook(lv_tick_task);
             }
             else
@@ -162,30 +133,30 @@ namespace redstone
 
     // A class instance callback to flush the display buffer and thereby write colors to screen
     void LvDisplayDriver::display_drv_flush(lv_disp_drv_t* drv, const lv_area_t* area, lv_color_t* color_map)
-    { 
+    {
         uint32_t x1 = area->x1;
         uint32_t y1 = area->y1;
         uint32_t x2 = area->x2;
         uint32_t y2 = area->y2;
 
-        uint32_t number_of_bytes_to_flush = (x2-x1+1)*(y2-y1+1)*COLOR_SIZE;
-        uint32_t number_of_dma_blocks_with_complete_lines_to_send = number_of_bytes_to_flush/MAX_DMA_LEN;
+        uint32_t number_of_bytes_to_flush = (x2 - x1 + 1) * (y2 - y1 + 1) * COLOR_SIZE;
+        uint32_t number_of_dma_blocks_with_complete_lines_to_send = number_of_bytes_to_flush / MAX_DMA_LEN;
         uint32_t number_of_bytes_in_not_complete_lines_to_send = number_of_bytes_to_flush % MAX_DMA_LEN;
 
         uint32_t start_row = y1;
         uint32_t end_row = y1 + LINES_TO_SEND - 1;
 
         // Drawing area that has a height of LINES_TO_SEND
-        while(number_of_dma_blocks_with_complete_lines_to_send--)
+        while (number_of_dma_blocks_with_complete_lines_to_send--)
         {
             display->send_lines(x1, start_row, x2, end_row, reinterpret_cast<uint8_t*>(color_map), MAX_DMA_LEN);
             display->wait_for_send_lines_to_finish();
-            
+
             // color_map is pointer to type lv_color_t were the data type is based on color size so the
-            // color_map pointer may have a data type of uint8_t or uint16_t or uint32_t.  MAX_DMA_LEN is 
-            // a number based on uint8_t so we need to divide MAX_DMA_LEN by the color size to increment 
+            // color_map pointer may have a data type of uint8_t or uint16_t or uint32_t.  MAX_DMA_LEN is
+            // a number based on uint8_t so we need to divide MAX_DMA_LEN by the color size to increment
             // color_map pointer correctly
-            color_map += MAX_DMA_LEN/COLOR_SIZE; 
+            color_map += MAX_DMA_LEN / COLOR_SIZE;
 
             // update start_row and end_row since we have sent a quantity of LINES_TO_SEND rows
             start_row = end_row + 1;
@@ -196,12 +167,12 @@ namespace redstone
         if (number_of_bytes_in_not_complete_lines_to_send)
         {
             end_row = y2;
-            display->send_lines(x1, start_row, x2, end_row, 
-                                reinterpret_cast<uint8_t*>(color_map), 
+            display->send_lines(x1, start_row, x2, end_row,
+                                reinterpret_cast<uint8_t*>(color_map),
                                 number_of_bytes_in_not_complete_lines_to_send);
 
             display->wait_for_send_lines_to_finish();
-        } 
+        }
 
         // Inform the lvgl graphics library that we are ready for flushing buffer
         lv_disp_t* disp = lv_refr_get_disp_refreshing();
@@ -211,15 +182,15 @@ namespace redstone
     // The "C" style callback required by LittlevGL
     void IRAM_ATTR LvDisplayDriver::ili9341_flush_cb(lv_disp_drv_t* drv, const lv_area_t* area, lv_color_t* color_map)
     {
-        if (ptrLvDisplayDriver != nullptr) 
+        if (ptrLvDisplayDriver != nullptr)
         {
             ptrLvDisplayDriver->display_drv_flush(drv, area, color_map);
         }
     }
 
-    // The  lv_tick_task that is required by LittlevGL
+    // The  lv_tick_task that is required by LittlevGL for internal timing
     void IRAM_ATTR LvDisplayDriver::lv_tick_task(void)
     {
-        lv_tick_inc(portTICK_RATE_MS * 5);  // 5 ms tick_task
+        lv_tick_inc(portTICK_RATE_MS);  // 1 ms tick_task
     }
 }
